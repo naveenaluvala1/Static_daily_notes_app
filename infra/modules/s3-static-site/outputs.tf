@@ -1,3 +1,3 @@
 output "website_url" {
-  value = "http://${aws_s3_bucket.static_site.website_endpoint}"
+  value = aws_s3_bucket_website_configuration.static_site_website.website_endpoint
 }

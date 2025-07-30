@@ -1,13 +1,20 @@
 resource "aws_s3_bucket" "static_site" {
-  bucket = var.bucket_name
-
-  website {
-    index_document = "index.html"
-    error_document = "index.html"
-  }
-
+  bucket        = var.bucket_name
   force_destroy = true
 }
+
+resource "aws_s3_bucket_website_configuration" "static_site_website" {
+  bucket = aws_s3_bucket.static_site.id
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "index.html"
+  }
+}
+
 
 resource "aws_s3_bucket_public_access_block" "public" {
   bucket = aws_s3_bucket.static_site.id
