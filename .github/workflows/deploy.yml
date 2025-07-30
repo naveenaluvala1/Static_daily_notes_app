@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   terraform-plan:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,12 +28,16 @@ jobs:
           terraform init
           terraform plan -out=tfplan
 
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: infra/tfplan
+
   terraform-apply:
+    if: github.event_name == 'workflow_dispatch'
     needs: terraform-plan
     runs-on: ubuntu-latest
-    environment:
-      name: production
-      url: https://aws.amazon.com
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -40,6 +46,12 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.5.7
+
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: infra
 
       - name: Terraform Apply
         working-directory: infra
