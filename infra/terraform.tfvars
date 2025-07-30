@@ -1,2 +1,2 @@
 bucket_name = "daily-notes-bucket-123"
-region      = "ap-south-1"
+region      = "us-east-1"
